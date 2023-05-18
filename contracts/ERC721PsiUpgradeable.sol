@@ -71,7 +71,7 @@ contract ERC721PsiUpgradeable is
    * @dev Returns the starting token ID.
    * To change the starting token ID, please override this function.
    */
-  function _startTokenId() internal pure returns (uint256) {
+  function _startTokenId() internal pure virtual returns (uint256) {
     // It will become modifiable in the future versions
     return 0;
   }
@@ -297,7 +297,7 @@ contract ERC721PsiUpgradeable is
    * - `from` cannot be the zero address.
    * - `to` cannot be the zero address.
    * - `tokenId` token must exist and be owned by `from`.
-   * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+   * - If `to` refers to a smart contract, it must implement {IERC721ReceiverUpgradeable-onERC721Received}, which is called upon a safe transfer.
    *
    * Emits a {Transfer} event.
    */
@@ -351,7 +351,7 @@ contract ERC721PsiUpgradeable is
    *
    * Requirements:
    *
-   * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called for each safe transfer.
+   * - If `to` refers to a smart contract, it must implement {IERC721ReceiverUpgradeable-onERC721Received}, which is called for each safe transfer.
    * - `quantity` must be greater than 0.
    *
    * Emits a {Transfer} event.
@@ -449,7 +449,7 @@ contract ERC721PsiUpgradeable is
   }
 
   /**
-   * @dev Internal function to invoke {IERC721Receiver-onERC721Received} on a target address.
+   * @dev Internal function to invoke {IERC721ReceiverUpgradeable-onERC721Received} on a target address.
    * The call is not executed if the target address is not a contract.
    *
    * @param from address representing the previous owner of the given token ID
@@ -474,14 +474,16 @@ contract ERC721PsiUpgradeable is
         tokenId++
       ) {
         try
-          IERC721Receiver(to).onERC721Received(
+          IERC721ReceiverUpgradeable(to).onERC721Received(
             _msgSender(),
             from,
             tokenId,
             _data
           )
         returns (bytes4 retval) {
-          r = r && retval == IERC721Receiver.onERC721Received.selector;
+          r =
+            r &&
+            retval == IERC721ReceiverUpgradeable.onERC721Received.selector;
         } catch (bytes memory reason) {
           if (reason.length == 0) {
             revert("ERC721Psi: transfer to non ERC721Receiver implementer");
